@@ -34,7 +34,7 @@ function preloadImages(callback) {
   loadingIndicator.id = 'loading-indicator';
   loadingIndicator.innerHTML = `
     <div class="loading-spinner"></div>
-    <div class="loading-text">Loading game assets... <span id="loading-progress">0</span>/${totalImages}</div>
+    <div class="loading-text">Preparing your game... <span id="loading-progress">0</span>%</div>
   `;
   document.querySelector('.game-container').prepend(loadingIndicator);
   
@@ -45,10 +45,13 @@ function preloadImages(callback) {
     const img = new Image();
     img.onload = () => {
       imagesLoaded++;
-      document.getElementById('loading-progress').textContent = imagesLoaded;
+      // Calculate percentage instead of showing count
+      const percentage = Math.round((imagesLoaded / totalImages) * 100);
+      document.getElementById('loading-progress').textContent = percentage;
       
       if (imagesLoaded === totalImages) {
         // All images loaded
+        document.getElementById('loading-progress').textContent = '100';
         loadingIndicator.classList.add('fade-out');
         setTimeout(() => {
           loadingIndicator.remove();
@@ -59,9 +62,12 @@ function preloadImages(callback) {
     img.onerror = () => {
       console.error(`Failed to load image: ${path}`);
       imagesLoaded++;
-      document.getElementById('loading-progress').textContent = imagesLoaded;
+      // Calculate percentage for errors too
+      const percentage = Math.round((imagesLoaded / totalImages) * 100);
+      document.getElementById('loading-progress').textContent = percentage;
       
       if (imagesLoaded === totalImages) {
+        document.getElementById('loading-progress').textContent = '100';
         loadingIndicator.classList.add('fade-out');
         setTimeout(() => {
           loadingIndicator.remove();
