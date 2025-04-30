@@ -55,10 +55,6 @@ function createBoard() {
   });
   cardImages = shuffle(cardImages);
 
-  // Remove JS override of gridTemplateColumns/Rows so CSS controls layout
-  // board.style.gridTemplateColumns = 'repeat(8, 1fr)';
-  // board.style.gridTemplateRows = 'repeat(2, 1fr)';
-
   cards = cardImages.map((cardObj, idx) => {
     const card = document.createElement('div');
     card.classList.add('card');
@@ -75,24 +71,28 @@ function createBoard() {
     return card;
   });
 
-  const autoCompleteBtn = document.createElement('button');
-  autoCompleteBtn.textContent = 'Auto-complete';
-  autoCompleteBtn.className = 'btn-outline';
-  autoCompleteBtn.setAttribute('aria-label', 'Auto-complete (for testing)');
-  autoCompleteBtn.style.marginLeft = '8px';
-  autoCompleteBtn.addEventListener('click', () => {
-    // Flip and match all cards instantly
-    cards.forEach(card => {
-      card.classList.add('flipped', 'matched');
+  // Move/create the Auto-complete button under the headline
+  let autoCompleteBtn = document.getElementById('auto-complete-btn');
+  if (!autoCompleteBtn) {
+    autoCompleteBtn = document.createElement('button');
+    autoCompleteBtn.id = 'auto-complete-btn';
+    autoCompleteBtn.textContent = 'Auto-complete';
+    autoCompleteBtn.className = 'btn-outline';
+    autoCompleteBtn.setAttribute('aria-label', 'Auto-complete (for testing)');
+    autoCompleteBtn.addEventListener('click', () => {
+      cards.forEach(card => {
+        card.classList.add('flipped', 'matched');
+      });
+      matchedCount = 16;
+      moves++;
+      moveCounter.textContent = `Moves: ${moves}`;
+      clearInterval(timerInterval);
+      setTimeout(endGame, 500);
     });
-    matchedCount = 16;
-    moves++;
-    moveCounter.textContent = `Moves: ${moves}`;
-    clearInterval(timerInterval);
-    setTimeout(endGame, 500); // Show victory after short delay
-  });
-  // Insert the button next to Restart
-  restartBtn.parentNode.appendChild(autoCompleteBtn);
+    // Insert after the headline
+    const headline = document.querySelector('.game-container h1');
+    headline.insertAdjacentElement('afterend', autoCompleteBtn);
+  }
 }
 
 function handleCardClick(card) {
