@@ -395,22 +395,16 @@ h1 {
 }
 
 #auto-complete-btn {
-  display: block;
-  margin: 16px auto 0 auto;
-  font-size: 1rem;
-  border-radius: 999px;
-  padding: 10px 32px;
-  border: 2px solid #0F1828;
-  background: transparent;
-  color: #0F1828;
-  font-weight: 600;
-  box-shadow: 0 2px 4px 0 #0F182820;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-#auto-complete-btn:focus, #auto-complete-btn:hover {
-  background: #f0f4fa;
-  color: #0F1828;
+  /* Hide the auto-complete button but keep it accessible for programmatic use */
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  margin: -1px;
+  padding: 0;
 }
 
 body, .modal-bg, .modal {

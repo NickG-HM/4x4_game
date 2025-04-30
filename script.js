@@ -71,7 +71,7 @@ function createBoard() {
     return card;
   });
 
-  // Move/create the Auto-complete button under the headline
+  // Create the Auto-complete button but make it hidden
   let autoCompleteBtn = document.getElementById('auto-complete-btn');
   if (!autoCompleteBtn) {
     autoCompleteBtn = document.createElement('button');
@@ -79,6 +79,18 @@ function createBoard() {
     autoCompleteBtn.textContent = 'Auto-complete';
     autoCompleteBtn.className = 'btn-outline';
     autoCompleteBtn.setAttribute('aria-label', 'Auto-complete (for testing)');
+    
+    // Hide the button visually but keep it functional for testing if needed
+    autoCompleteBtn.style.position = 'absolute';
+    autoCompleteBtn.style.opacity = '0';
+    autoCompleteBtn.style.pointerEvents = 'none';
+    autoCompleteBtn.style.width = '1px';
+    autoCompleteBtn.style.height = '1px';
+    autoCompleteBtn.style.overflow = 'hidden';
+    autoCompleteBtn.style.clip = 'rect(0 0 0 0)';
+    autoCompleteBtn.style.margin = '-1px';
+    autoCompleteBtn.style.padding = '0';
+    
     autoCompleteBtn.addEventListener('click', () => {
       cards.forEach(card => {
         card.classList.add('flipped', 'matched');
@@ -89,7 +101,8 @@ function createBoard() {
       clearInterval(timerInterval);
       setTimeout(endGame, 500);
     });
-    // Insert after the headline
+    
+    // Still add the button to the DOM, but invisibly
     const headline = document.querySelector('.game-container h1');
     headline.insertAdjacentElement('afterend', autoCompleteBtn);
   }
