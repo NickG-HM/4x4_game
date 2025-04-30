@@ -79,11 +79,78 @@ function preloadImages(callback) {
   });
 }
 
-function shuffle(array) {
+// Improved shuffling algorithm that avoids adjacent duplicates
+function improvedShuffle(array) {
+  // First do a standard Fisher-Yates shuffle
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+  
+  // Check for adjacent duplicates and fix if found
+  let needsReshuffle = true;
+  let attempts = 0;
+  const maxAttempts = 10; // Prevent infinite loops
+  
+  while (needsReshuffle && attempts < maxAttempts) {
+    needsReshuffle = false;
+    attempts++;
+    
+    // Check entire array for adjacent duplicates
+    for (let i = 0; i < array.length - 1; i++) {
+      if (array[i].id === array[i + 1].id) {
+        // Find a non-adjacent position to swap with
+        let swapIndex = -1;
+        
+        // Look for a safe position to swap with (not creating new adjacencies)
+        for (let j = i + 2; j < array.length; j++) {
+          if (array[j].id !== array[i].id && 
+              (j === array.length - 1 || array[j].id !== array[j + 1].id) &&
+              (j < array.length - 1 || array[j].id !== array[0].id)) {
+            swapIndex = j;
+            break;
+          }
+        }
+        
+        // If no safe position found, look for any non-adjacent position
+        if (swapIndex === -1) {
+          for (let j = i + 2; j < array.length; j++) {
+            if (array[j].id !== array[i].id) {
+              swapIndex = j;
+              break;
+            }
+          }
+        }
+        
+        // Swap if position found
+        if (swapIndex !== -1) {
+          [array[i + 1], array[swapIndex]] = [array[swapIndex], array[i + 1]];
+          needsReshuffle = true; // Check again after swap
+          break;
+        }
+      }
+    }
+    
+    // Check for wrap-around adjacent duplicates (last and first)
+    if (array[array.length - 1].id === array[0].id) {
+      // Find a position to swap with
+      let swapIndex = -1;
+      for (let j = 1; j < array.length - 1; j++) {
+        if (array[j].id !== array[array.length - 1].id && 
+            array[j].id !== array[j - 1].id && 
+            array[j].id !== array[j + 1].id) {
+          swapIndex = j;
+          break;
+        }
+      }
+      
+      if (swapIndex !== -1) {
+        [array[0], array[swapIndex]] = [array[swapIndex], array[0]];
+        needsReshuffle = true;
+      }
+    }
+  }
+  
   return array;
 }
 
@@ -106,7 +173,9 @@ function createBoard() {
       cardImages.push({ img, id: idx });
     }
   });
-  cardImages = shuffle(cardImages);
+  
+  // Use improved shuffle algorithm instead of regular shuffle
+  cardImages = improvedShuffle(cardImages);
 
   cards = cardImages.map((cardObj, idx) => {
     const card = document.createElement('div');
