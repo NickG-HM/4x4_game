@@ -16,6 +16,8 @@ let moves = 0;
 let timer = 0;
 let timerInterval = null;
 let gameStarted = false;
+let imagesLoaded = 0;
+let totalImages = imagePaths.length;
 
 const board = document.getElementById('game-board');
 const moveCounter = document.getElementById('move-counter');
@@ -25,6 +27,51 @@ const victoryModal = document.getElementById('victory-modal');
 const victoryMessage = document.getElementById('victory-message');
 const restartModalBtn = document.getElementById('restart-modal-btn');
 const shareFacebookBtn = document.getElementById('share-facebook');
+
+// Preload all images before starting the game
+function preloadImages(callback) {
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.id = 'loading-indicator';
+  loadingIndicator.innerHTML = `
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading game assets... <span id="loading-progress">0</span>/${totalImages}</div>
+  `;
+  document.querySelector('.game-container').prepend(loadingIndicator);
+  
+  imagesLoaded = 0;
+  
+  // Create image objects and preload them
+  imagePaths.forEach((path) => {
+    const img = new Image();
+    img.onload = () => {
+      imagesLoaded++;
+      document.getElementById('loading-progress').textContent = imagesLoaded;
+      
+      if (imagesLoaded === totalImages) {
+        // All images loaded
+        loadingIndicator.classList.add('fade-out');
+        setTimeout(() => {
+          loadingIndicator.remove();
+          if (callback) callback();
+        }, 500);
+      }
+    };
+    img.onerror = () => {
+      console.error(`Failed to load image: ${path}`);
+      imagesLoaded++;
+      document.getElementById('loading-progress').textContent = imagesLoaded;
+      
+      if (imagesLoaded === totalImages) {
+        loadingIndicator.classList.add('fade-out');
+        setTimeout(() => {
+          loadingIndicator.remove();
+          if (callback) callback();
+        }, 500);
+      }
+    };
+    img.src = path;
+  });
+}
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -60,12 +107,17 @@ function createBoard() {
     card.classList.add('card');
     card.dataset.symbol = cardObj.id;
     card.dataset.index = idx;
+    
+    // Optimize image loading with loading="lazy" and decoding="async"
     card.innerHTML = `
       <div class=\"card-inner\">
-        <div class=\"card-front\"><img src=\"${cardObj.img}\" alt=\"Memory Card\" draggable=\"false\"></div>
+        <div class=\"card-front\">
+          <img src=\"${cardObj.img}\" alt=\"Memory Card\" draggable=\"false\" loading=\"lazy\" decoding=\"async\">
+        </div>
         <div class=\"card-back\">?</div>
       </div>
     `;
+    
     card.addEventListener('click', () => handleCardClick(card));
     board.appendChild(card);
     return card;
@@ -194,7 +246,9 @@ function endGame() {
 
 function restartGame() {
   victoryModal.classList.add('hidden');
-  createBoard();
+  preloadImages(() => {
+    createBoard();
+  });
 }
 
 restartBtn.addEventListener('click', restartGame);
@@ -206,5 +260,9 @@ shareFacebookBtn.addEventListener('click', function() {
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
 });
 
-// Start the game on load
-createBoard(); 
+// Start the game after preloading images
+window.addEventListener('DOMContentLoaded', () => {
+  preloadImages(() => {
+    createBoard();
+  });
+}); 
