@@ -43,7 +43,7 @@ h1 {
 
 #restart-btn {
   margin-left: 16px;
-  background: #0a1923;
+  background: #d32f2f;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -53,7 +53,7 @@ h1 {
   transition: background 0.2s;
 }
 #restart-btn:hover {
-  background: #142c3f;
+  background: #b71c1c;
 }
 
 .game-board {
