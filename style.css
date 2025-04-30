@@ -448,9 +448,9 @@ body, .modal-bg, .modal {
   max-width: 420px;
   margin: 0 16px;
   background: #fff;
-  border-radius: 24px;
+  border-radius: 32px;
   box-shadow: 0 6px 12px #0001;
-  padding: 32px 24px 32px 24px;
+  padding: 40px 24px 48px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -460,27 +460,29 @@ body, .modal-bg, .modal {
 .victory-headline {
   font-family: 'Montserrat', 'Poppins', Arial, sans-serif;
   font-weight: 800;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   color: #0F1828;
-  margin: 0 0 18px 0;
+  margin: 0 0 24px 0;
   text-align: center;
   z-index: 2;
 }
 .victory-subtitle {
   font-family: 'Montserrat', 'Poppins', Arial, sans-serif;
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #222;
   opacity: 0.92;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   text-align: center;
   z-index: 2;
 }
 .victory-promo {
-  font-size: 1.15rem;
+  font-size: 1rem;
+  font-weight: 400;
   color: #333;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  line-height: 1.4;
   z-index: 2;
 }
 .brand-blue {
@@ -490,6 +492,7 @@ body, .modal-bg, .modal {
 .book-link {
   color: #3C6FF5;
   text-decoration: underline;
+  font-size: 0.98em;
   font-weight: 600;
   transition: color 0.2s;
 }
@@ -499,19 +502,19 @@ body, .modal-bg, .modal {
 .victory-btns {
   display: flex;
   flex-direction: row;
-  gap: 18px;
+  gap: 24px;
   width: 100%;
-  margin-top: 12px;
+  margin-top: 24px;
   align-items: center;
   justify-content: center;
 }
 .btn-primary, .btn-outline {
   font-family: inherit;
-  font-size: 1.25rem;
+  font-size: 1.08rem;
   border-radius: 999px;
-  padding: 16px 44px;
-  min-width: 160px;
-  margin: 0 4px;
+  padding: 12px 32px;
+  min-width: 120px;
+  margin: 0 2px;
   outline: none;
   transition: box-shadow 0.15s, background 0.15s, color 0.15s;
   box-shadow: 0 2px 4px 0 #0F182820;
@@ -536,4 +539,28 @@ body, .modal-bg, .modal {
 .btn-outline:focus, .btn-outline:hover {
   background: #f0f4fa;
   color: #0F1828;
+}
+
+@media (max-width: 500px) {
+  .victory-content {
+    padding: 24px 6vw 32px 6vw;
+    border-radius: 20px;
+  }
+  .victory-headline {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+  .victory-promo {
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+  }
+  .victory-btns {
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .btn-primary, .btn-outline {
+    font-size: 0.98rem;
+    padding: 10px 18px;
+    min-width: 90px;
+  }
 } 
