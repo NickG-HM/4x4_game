@@ -130,8 +130,10 @@ h1 {
   border-radius: 20px;
 }
 .card-front img {
-  width: 100px;
-  height: 100px;
+  width: 90%;
+  height: 90%;
+  max-width: 90px;
+  max-height: 90px;
   object-fit: contain;
   border-radius: 12px;
   user-select: none;

@@ -24,7 +24,6 @@ const restartBtn = document.getElementById('restart-btn');
 const victoryModal = document.getElementById('victory-modal');
 const victoryMessage = document.getElementById('victory-message');
 const restartModalBtn = document.getElementById('restart-modal-btn');
-const shareInstagramBtn = document.getElementById('share-instagram');
 const shareFacebookBtn = document.getElementById('share-facebook');
 
 function shuffle(array) {
@@ -75,6 +74,25 @@ function createBoard() {
     board.appendChild(card);
     return card;
   });
+
+  const autoCompleteBtn = document.createElement('button');
+  autoCompleteBtn.textContent = 'Auto-complete';
+  autoCompleteBtn.className = 'btn-outline';
+  autoCompleteBtn.setAttribute('aria-label', 'Auto-complete (for testing)');
+  autoCompleteBtn.style.marginLeft = '8px';
+  autoCompleteBtn.addEventListener('click', () => {
+    // Flip and match all cards instantly
+    cards.forEach(card => {
+      card.classList.add('flipped', 'matched');
+    });
+    matchedCount = 16;
+    moves++;
+    moveCounter.textContent = `Moves: ${moves}`;
+    clearInterval(timerInterval);
+    setTimeout(endGame, 500); // Show victory after short delay
+  });
+  // Insert the button next to Restart
+  restartBtn.parentNode.appendChild(autoCompleteBtn);
 }
 
 function handleCardClick(card) {
@@ -140,14 +158,6 @@ function restartGame() {
 
 restartBtn.addEventListener('click', restartGame);
 restartModalBtn.addEventListener('click', restartGame);
-
-shareInstagramBtn.addEventListener('click', function() {
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent('Check out my score in HUNGRY Memory Game!');
-  // Instagram does not support direct share, so copy to clipboard and alert
-  navigator.clipboard.writeText(`${text} ${url}`);
-  alert('Instagram does not support direct sharing. The message has been copied to your clipboard. Paste it in your Instagram story or post!');
-});
 
 shareFacebookBtn.addEventListener('click', function() {
   const url = encodeURIComponent(window.location.href);
