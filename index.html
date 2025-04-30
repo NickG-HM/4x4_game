@@ -16,18 +16,19 @@
     </div>
     <div id="game-board" class="game-board"></div>
   </div>
-  <div id="victory-modal" class="modal hidden">
-    <div class="modal-content animated-modal">
-      <h2>Congratulations!</h2>
-      <p id="victory-message"></p>
-      <p class="book-promo">
-        You can find more ART in <a href="https://howtorebuildcivilization.com/collections/all-books/products/the-book?variant=43738853081380" target="_blank" rel="noopener noreferrer">The Book. The Ultimate Guide to Rebuilding a Civilization</a>
+  <div id="victory-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="victory-title">
+    <div class="confetti-bg" aria-hidden="true"></div>
+    <div class="modal-content animated-modal victory-content">
+      <h2 id="victory-title" class="victory-headline">Congratulations!</h2>
+      <p id="victory-message" class="victory-subtitle"></p>
+      <p class="victory-promo">
+        Discover more <span class="brand-blue">ART</span> in
+        <a href="https://howtorebuildcivilization.com/collections/all-books/products/the-book?variant=43738853081380" target="_blank" rel="noopener noreferrer" class="book-link">The Book: The Ultimate Guide to Rebuilding a Civilization</a>
       </p>
-      <div class="share-buttons">
-        <button id="share-instagram" class="share-btn">Share on Instagram</button>
-        <button id="share-facebook" class="share-btn">Share on Facebook</button>
+      <div class="victory-btns">
+        <button id="restart-modal-btn" class="btn-primary" aria-label="Restart">Restart</button>
+        <button id="share-facebook" class="btn-outline" aria-label="Share on Facebook">Share on Facebook</button>
       </div>
-      <button id="restart-modal-btn" class="blue-btn">Restart</button>
     </div>
   </div>
   <script src="script.js"></script>

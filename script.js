@@ -149,6 +149,18 @@ function endGame() {
   clearInterval(timerInterval);
   victoryMessage.textContent = `You won in ${moves} moves and ${timer} seconds!`;
   victoryModal.classList.remove('hidden');
+  // Add confetti dots if not already present
+  const confettiBg = document.querySelector('.confetti-bg');
+  if (confettiBg && confettiBg.childElementCount === 0) {
+    const colors = ['blue', 'pink', 'yellow', 'cyan', 'red'];
+    for (let i = 0; i < 32; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'confetti-dot ' + colors[i % colors.length];
+      dot.style.left = Math.random() * 100 + '%';
+      dot.style.animationDelay = (Math.random() * 3) + 's';
+      confettiBg.appendChild(dot);
+    }
+  }
 }
 
 function restartGame() {
