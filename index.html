@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game 4x4</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>HUNGRY Memory Game</h1>
+    <div class="game-info">
+      <span id="move-counter">Moves: 0</span>
+      <span id="timer">Time: 0s</span>
+      <button id="restart-btn">Restart</button>
+    </div>
+    <div id="game-board" class="game-board"></div>
+  </div>
+  <div id="victory-modal" class="modal hidden">
+    <div class="modal-content animated-modal">
+      <h2>Congratulations!</h2>
+      <p id="victory-message"></p>
+      <p class="book-promo">
+        You can find more ART in <a href="https://howtorebuildcivilization.com/collections/all-books/products/the-book?variant=43738853081380" target="_blank" rel="noopener noreferrer">The Book. The Ultimate Guide to Rebuilding a Civilization</a>
+      </p>
+      <div class="share-buttons">
+        <button id="share-instagram" class="share-btn">Share on Instagram</button>
+        <button id="share-facebook" class="share-btn">Share on Facebook</button>
+      </div>
+      <button id="restart-modal-btn" class="blue-btn">Restart</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html> 
