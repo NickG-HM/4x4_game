@@ -425,22 +425,54 @@ body, .modal-bg, .modal {
   overflow: hidden;
   background: #F5F5F7;
 }
+
 .confetti-dot {
   position: absolute;
-  width: 12px; 
-  height: 12px;
-  border-radius: 50%;
+  border-radius: 12px;
   opacity: 0.2;
-  animation: confetti-fall 4s linear infinite;
+  animation: confetti-fall 8s linear infinite;
 }
-.confetti-dot.blue { background: #C2D3FF; }
-.confetti-dot.pink { background: #F5D3FC; }
-.confetti-dot.yellow { background: #FFE9A0; }
-.confetti-dot.cyan { background: #D8F2F9; }
-.confetti-dot.red { background: #F9D3D3; }
+
+.confetti-dot.blue {
+  width: 16px;
+  height: 48px;
+  background: #C2D3FF;
+  transform: rotate(30deg);
+}
+.confetti-dot.pink {
+  width: 24px;
+  height: 24px;
+  background: #F5D3FC;
+  border-radius: 50%;
+}
+.confetti-dot.yellow {
+  width: 24px;
+  height: 48px;
+  background: #FFE9A0;
+  transform: rotate(-15deg);
+}
+.confetti-dot.cyan {
+  width: 16px;
+  height: 36px;
+  background: #D8F2F9;
+  transform: rotate(45deg);
+}
+.confetti-dot.red {
+  width: 20px;
+  height: 20px;
+  background: #F9D3D3;
+  border-radius: 50%;
+}
+
 @keyframes confetti-fall {
-  0% { top: -20px; transform: translateY(0) scale(1) rotate(0deg);}
-  100% { top: 110%; transform: translateY(0) scale(1.2) rotate(360deg);}
+  0% { 
+    top: -50px; 
+    transform: translateY(0) rotate(var(--rotate));
+  }
+  100% { 
+    top: 110%; 
+    transform: translateY(0) rotate(calc(var(--rotate) + 45deg));
+  }
 }
 
 .victory-content {
@@ -451,143 +483,134 @@ body, .modal-bg, .modal {
   background: #fff;
   border-radius: 32px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
-  padding: 0 0 48px 0;
+  padding: 36px 24px 36px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow: hidden;
   z-index: 1;
 }
+
 .victory-content::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 24px;
-  background: linear-gradient(90deg, #F6F8FF 0%, #E3E9FF 100%);
-  z-index: 1;
+  display: none;
 }
+
 .victory-headline {
   font-family: 'Montserrat', 'Poppins', Arial, sans-serif;
   font-weight: 900;
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   color: #111;
-  margin: 40px 0 24px 0;
+  margin: 0 0 24px 0;
   text-align: center;
   z-index: 2;
 }
+
 .victory-subtitle {
   font-family: 'Montserrat', 'Poppins', Arial, sans-serif;
   font-weight: 400;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   color: #333;
   opacity: 0.9;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   text-align: center;
   z-index: 2;
   padding: 0 24px;
+  line-height: 1.4;
 }
+
 .victory-promo {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 400;
   color: #333;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 52px;
   line-height: 1.4;
   z-index: 2;
   padding: 0 24px;
 }
+
 .brand-blue {
   color: #0F1828;
   font-weight: 700;
+  font-size: 1.3em;
 }
+
 .book-link {
   color: #0F1828;
   text-decoration: underline;
-  font-size: 0.98em;
   font-weight: 600;
   transition: color 0.2s;
+  display: block;
+  margin-top: 4px;
 }
+
 .book-link:hover {
   color: #1a3fa6;
 }
+
 .victory-btns {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 16px;
-  width: calc(100% - 48px);
-  margin-top: 24px;
+  width: 100%;
+  margin-top: 12px;
   align-items: center;
   justify-content: center;
-  padding: 0 24px;
+  padding: 0;
 }
+
 .btn-primary, .btn-outline {
   font-family: inherit;
+  font-size: 1.2rem;
   border-radius: 999px;
+  padding: 16px 20px;
   outline: none;
   transition: box-shadow 0.15s, background 0.15s, color 0.15s;
   cursor: pointer;
+  width: 45%;
 }
+
 .btn-primary {
   background: #0F1828;
   color: #fff;
-  font-size: 1.08rem;
   font-weight: 600;
-  padding: 12px 24px;
-  width: 100%;
   border: none;
   box-shadow: 0 2px 4px rgba(15, 24, 40, 0.12);
 }
+
 .btn-primary:focus, .btn-primary:hover {
   background: #1a2740;
   color: #fff;
   box-shadow: 0 2px 6px rgba(15, 24, 40, 0.18);
 }
+
 .btn-outline {
   background: transparent;
   color: #0F1828;
-  font-size: 1rem;
   font-weight: 500;
-  padding: 10px 24px;
-  width: 100%;
   border: 1.5px solid #0F1828;
 }
+
 .btn-outline:focus, .btn-outline:hover {
   background: #f0f4fa;
   color: #0F1828;
 }
 
-@media (min-width: 420px) {
-  .victory-btns {
-    flex-direction: row;
-    justify-content: center;
-  }
-  
-  .btn-primary, .btn-outline {
-    width: auto;
-  }
-  
-  .btn-primary {
-    min-width: 140px;
-  }
-  
-  .btn-outline {
-    min-width: 220px;
-  }
-}
-
 @media (max-width: 400px) {
   .victory-headline {
-    font-size: 1.8rem;
-    margin: 32px 0 20px 0;
+    font-size: 2rem;
   }
   
   .victory-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .victory-promo {
-    font-size: 0.92rem;
+    font-size: 1rem;
+  }
+  
+  .btn-primary, .btn-outline {
+    font-size: 1rem;
+    padding: 14px 10px;
   }
 } 

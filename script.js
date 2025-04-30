@@ -149,17 +149,33 @@ function endGame() {
   clearInterval(timerInterval);
   victoryMessage.textContent = `You won in ${moves} moves and ${timer} seconds!`;
   victoryModal.classList.remove('hidden');
-  // Add confetti dots if not already present
+  
+  // Clear any existing confetti
   const confettiBg = document.querySelector('.confetti-bg');
-  if (confettiBg && confettiBg.childElementCount === 0) {
-    const colors = ['blue', 'pink', 'yellow', 'cyan', 'red'];
-    for (let i = 0; i < 32; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'confetti-dot ' + colors[i % colors.length];
-      dot.style.left = Math.random() * 100 + '%';
-      dot.style.animationDelay = (Math.random() * 3) + 's';
-      confettiBg.appendChild(dot);
-    }
+  confettiBg.innerHTML = '';
+  
+  // Add confetti elements to match the screenshot
+  const colors = ['blue', 'pink', 'yellow', 'cyan', 'red'];
+  const rotations = [15, 30, 45, 60, -15, -30, -45];
+  
+  // Create more confetti for a fuller effect
+  for (let i = 0; i < 50; i++) {
+    const dot = document.createElement('div');
+    const colorClass = colors[Math.floor(Math.random() * colors.length)];
+    dot.className = `confetti-dot ${colorClass}`;
+    
+    // Position randomly across the screen
+    dot.style.left = `${Math.random() * 100}%`;
+    
+    // Random delay for more natural effect
+    const delay = Math.random() * 8;
+    dot.style.animationDelay = `${delay}s`;
+    
+    // Set random rotation angle
+    const rotate = rotations[Math.floor(Math.random() * rotations.length)];
+    dot.style.setProperty('--rotate', `${rotate}deg`);
+    
+    confettiBg.appendChild(dot);
   }
 }
 
