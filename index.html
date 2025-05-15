@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memory Game 4x4</title>
+  <title>Hungry Memory Game</title>
+  
+  <!-- Social sharing meta tags -->
+  <meta property="og:title" content="Hungry Memory Game">
+  <meta property="og:site_name" content="Hungry Memory Game">
+  <meta name="title" content="Hungry Memory Game">
+  <meta property="og:description" content="Challenge your memory with this beautiful vintage memory card game!">
+  <meta property="og:image" content="https://game.howtorebuildcivilization.com/Images/share-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://game.howtorebuildcivilization.com/">
+  <meta property="og:type" content="website">
+  <meta property="fb:app_id" content="your_fb_app_id">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hungry Memory Game">
+  <meta name="description" content="Hungry Memory Game - Challenge your memory with this beautiful vintage memory card game!">
+  <meta property="fb:title" content="Hungry Memory Game">
+  <meta property="fb:description" content="Challenge your memory with this beautiful vintage memory card game!">
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <img src="./Images/left-side.png" alt="Decorative left side illustration" class="side-image-left">
+  <img src="./Images/right-side.png" alt="Decorative right side illustration" class="side-image-right">
+  
+  <div class="logo-container">
+    <img src="./Images/logo.svg" alt="Hungry Minds Logo" class="logo">
+  </div>
+  
   <div class="game-container">
-    <h1>HUNGRY Memory Game</h1>
+    <h1>HUNGRY MEMORY GAME</h1>
     <div class="game-info">
       <span id="move-counter">Moves: 0</span>
       <span id="timer">Time: 0s</span>
@@ -21,9 +46,12 @@
     <div class="modal-content animated-modal victory-content">
       <h2 id="victory-title" class="victory-headline">Congratulations!</h2>
       <p id="victory-message" class="victory-subtitle"></p>
-      <p class="victory-promo">
-        Discover more <span class="brand-blue">ART</span> in
-        <a href="https://howtorebuildcivilization.com/collections/all-books/products/the-book?variant=43738853081380" target="_blank" rel="noopener noreferrer" class="book-link">The Book: The Ultimate Guide to Rebuilding a Civilization</a>
+      <img src="./Images/book.png" alt="The Book: The Ultimate Guide to Rebuilding a Civilization" class="book-image transparent-img">
+      <a href="https://howtorebuildcivilization.com/en-au/collections/all-books/products/the-book?utm_source=web&utm_medium=game&utm_campaign=memory" target="_blank" rel="noopener noreferrer" class="book-btn">
+        <span class="normal-text">Discover more ART in</span> The Book: The Ultimate Guide to Rebuilding a Civilization
+      </a>
+      <p class="victory-code">
+        Use the code <span class="brand-blue">MEMORY</span> to get unique bookmarks.
       </p>
       <div class="victory-btns">
         <button id="restart-modal-btn" class="btn-primary" aria-label="Restart game">Restart</button>
@@ -31,6 +59,65 @@
       </div>
     </div>
   </div>
-  <script src="script.js"></script>
+  
+  <script>
+    // Direct inline auto-solve function that doesn't depend on the main script
+    function autoSolveFunction() {
+      console.log("Auto-solve function called directly");
+      
+      // Get all card elements
+      const cards = document.querySelectorAll('.card');
+      
+      // Start the game if needed
+      if (!window.gameStarted) {
+        window.gameStarted = true;
+        // Start timer would normally be called here
+      }
+      
+      // Flip all cards
+      cards.forEach(card => {
+        card.classList.add('flipped');
+        card.classList.add('matched');
+      });
+      
+      // Update moves counter
+      const moveCounter = document.getElementById('move-counter');
+      window.moves = (window.moves || 0) + 3;
+      moveCounter.textContent = `Moves: ${window.moves}`;
+      
+      // Clear timer if it exists
+      if (window.timerInterval) {
+        clearInterval(window.timerInterval);
+      }
+      
+      // Show victory message after 2-second delay
+      setTimeout(() => {
+        const victoryModal = document.getElementById('victory-modal');
+        const victoryMessage = document.getElementById('victory-message');
+        
+        if (victoryMessage) {
+          victoryMessage.textContent = `You won in ${window.moves || 3} moves and ${window.timer || 10} seconds!`;
+        }
+        
+        // Make sure book image is visible and properly sized
+        const bookImage = document.querySelector('.book-image');
+        if (bookImage) {
+          bookImage.style.display = 'block';
+        }
+        
+        // Make sure code message is visible
+        const codeMessage = document.querySelector('.victory-code');
+        if (codeMessage) {
+          codeMessage.style.display = 'block';
+        }
+        
+        if (victoryModal) {
+          victoryModal.classList.remove('hidden');
+        }
+      }, 2000);
+    }
+  </script>
+  
+  <script src="script.js?v=3"></script>
 </body>
 </html> 

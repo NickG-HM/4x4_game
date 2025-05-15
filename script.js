@@ -28,6 +28,35 @@ const victoryMessage = document.getElementById('victory-message');
 const restartModalBtn = document.getElementById('restart-modal-btn');
 const shareFacebookBtn = document.getElementById('share-facebook');
 
+// Function to auto-solve the game directly
+function autoSolveGame() {
+  console.log("Auto-solving game...");
+  
+  if (!gameStarted) {
+    gameStarted = true;
+    startTimer();
+  }
+  
+  // Force match all cards
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].classList.add('flipped');
+    cards[i].classList.add('matched');
+  }
+  
+  // Update matched count
+  matchedCount = 16;
+  
+  // Add some moves for realism
+  moves += 3;
+  moveCounter.textContent = `Moves: ${moves}`;
+  
+  // Stop the timer
+  clearInterval(timerInterval);
+  
+  // Show victory screen after 2-second delay
+  setTimeout(endGame, 2000);
+}
+
 // Preload all images before starting the game
 function preloadImages(callback) {
   const loadingIndicator = document.createElement('div');
@@ -235,18 +264,37 @@ function createBoard() {
   }
 }
 
+// Helper to swap two DOM nodes
+function swapDomNodes(nodeA, nodeB) {
+  const parent = nodeA.parentNode;
+  const siblingA = nodeA.nextSibling === nodeB ? nodeA : nodeA.nextSibling;
+  parent.insertBefore(nodeA, nodeB);
+  parent.insertBefore(nodeB, siblingA);
+}
+
+// Helper to create a placeholder in the grid
+function createPlaceholder(card) {
+  const placeholder = document.createElement('div');
+  placeholder.className = 'card-placeholder';
+  placeholder.style.width = card.offsetWidth + 'px';
+  placeholder.style.height = card.offsetHeight + 'px';
+  card.parentNode.insertBefore(placeholder, card);
+  return placeholder;
+}
+
 function handleCardClick(card) {
   if (
     card.classList.contains('flipped') ||
     card.classList.contains('matched') ||
-    flippedCards.length === 2
+    flippedCards.length === 2 ||
+    board.classList.contains('input-blocked')
   ) {
     return;
   }
 
   if (!gameStarted) {
-    startTimer();
     gameStarted = true;
+    startTimer();
   }
 
   card.classList.add('flipped');
@@ -261,21 +309,61 @@ function handleCardClick(card) {
 
 function checkForMatch() {
   const [card1, card2] = flippedCards;
+
   if (card1.dataset.symbol === card2.dataset.symbol) {
+    // Cards match
     card1.classList.add('matched');
     card2.classList.add('matched');
     matchedCount += 2;
     flippedCards = [];
     if (matchedCount === 16) {
-      endGame();
+      clearInterval(timerInterval);
+      setTimeout(endGame, 2000);
     }
-  } else {
-    setTimeout(() => {
-      card1.classList.remove('flipped');
-      card2.classList.remove('flipped');
-      flippedCards = [];
-    }, 1000);
+    return;
   }
+
+  // Block input during animation
+  board.classList.add('input-blocked');
+  
+  // Get the images and their data
+  const img1 = card1.querySelector('.card-front img');
+  const img2 = card2.querySelector('.card-front img');
+  const img1Src = img1.src;
+  const img2Src = img2.src;
+  const symbol1 = card1.dataset.symbol;
+  const symbol2 = card2.dataset.symbol;
+  const index1 = parseInt(card1.dataset.index);
+  const index2 = parseInt(card2.dataset.index);
+  
+  // Simple swap with delay to view the cards first
+  setTimeout(() => {
+    // Swap the card images directly - no animation, just update the source
+    img1.src = img2Src;
+    img2.src = img1Src;
+    
+    // Swap the data attributes
+    card1.dataset.symbol = symbol2;
+    card2.dataset.symbol = symbol1;
+    
+    // Update logical cards array
+    [cards[index1], cards[index2]] = [cards[index2], cards[index1]];
+    
+    // Pause to let player see the swap
+    setTimeout(() => {
+      // Flip back the cards
+      card1.classList.add('flip-back');
+      card2.classList.add('flip-back');
+      
+      // Remove classes and unblock input after flip animation
+      setTimeout(() => {
+        card1.classList.remove('flipped', 'flip-back');
+        card2.classList.remove('flipped', 'flip-back');
+        flippedCards = [];
+        board.classList.remove('input-blocked');
+      }, 500); // flip back duration
+    }, 800); // time to see the swapped cards
+  }, 800); // time to see original cards
 }
 
 function startTimer() {
@@ -295,25 +383,46 @@ function endGame() {
   confettiBg.innerHTML = '';
   
   // Add confetti elements to match the screenshot
-  const colors = ['blue', 'pink', 'yellow', 'cyan', 'red'];
-  const rotations = [15, 30, 45, 60, -15, -30, -45];
+  const colors = ['blue', 'pink', 'yellow', 'cyan', 'red', 'green', 'purple', 'orange'];
+  const specialTypes = ['star', 'serpentine', 'curly'];
+  const rotations = [15, 30, 45, 60, -15, -30, -45, -60];
   
   // Create more confetti for a fuller effect
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     const dot = document.createElement('div');
-    const colorClass = colors[Math.floor(Math.random() * colors.length)];
-    dot.className = `confetti-dot ${colorClass}`;
+    
+    // Randomly choose between regular confetti and special types
+    const useSpecialType = Math.random() > 0.7; // 30% chance for special types
+    
+    if (useSpecialType) {
+      // Use a special type (star, serpentine, or curly)
+      const specialType = specialTypes[Math.floor(Math.random() * specialTypes.length)];
+      dot.className = `confetti-dot ${specialType}`;
+    } else {
+      // Use a regular color confetti
+      const colorClass = colors[Math.floor(Math.random() * colors.length)];
+      dot.className = `confetti-dot ${colorClass}`;
+    }
     
     // Position randomly across the screen
     dot.style.left = `${Math.random() * 100}%`;
     
     // Random delay for more natural effect
-    const delay = Math.random() * 8;
+    const delay = Math.random() * 6;
     dot.style.animationDelay = `${delay}s`;
+    
+    // Random animation duration for variation (20% faster)
+    const duration = 4 + Math.random() * 4.8; // 20% faster
+    dot.style.animationDuration = `${duration}s`;
     
     // Set random rotation angle
     const rotate = rotations[Math.floor(Math.random() * rotations.length)];
     dot.style.setProperty('--rotate', `${rotate}deg`);
+    
+    // Set random sway amounts
+    const swayAmount = 50 + Math.random() * 100;
+    dot.style.setProperty('--sway-left', `${-swayAmount}px`);
+    dot.style.setProperty('--sway-right', `${swayAmount}px`);
     
     confettiBg.appendChild(dot);
   }
@@ -326,17 +435,133 @@ function restartGame() {
   });
 }
 
+// Function to simulate a more dynamic sharing experience
+function captureVictoryScreen() {
+  // In a full implementation, we would use html2canvas or a similar library
+  // to capture the actual victory screen with the player's stats
+  console.log("Capturing victory screen for sharing...");
+  
+  // For now, we'll use the static image and dynamic text in the share dialog
+  return window.location.origin + '/Images/share-image.jpg';
+}
+
+// Function to handle Facebook sharing
+function shareToFacebook(gameUrl, text) {
+  // For better debugging to see what's being shared
+  console.log("Sharing to Facebook:", {gameUrl, text});
+  
+  try {
+    // Open Facebook's share dialog in a new tab
+    const url = encodeURIComponent(gameUrl);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    
+    // Since Facebook doesn't allow pre-populating the text field,
+    // we'll provide instructions to the user
+    setTimeout(() => {
+      alert(`Please paste this text into your Facebook post:\n\n${text}`);
+    }, 500);
+  } catch (error) {
+    console.error("Error sharing to Facebook:", error);
+    alert("There was an error opening the Facebook share dialog. Please try again.");
+  }
+}
+
+// Set up all event listeners
 restartBtn.addEventListener('click', restartGame);
 restartModalBtn.addEventListener('click', restartGame);
 
 shareFacebookBtn.addEventListener('click', function() {
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent('Check out my score in HUNGRY Memory Game!');
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+  // Game URL - replace with actual production URL when deployed
+  const gameUrl = 'https://game.howtorebuildcivilization.com/';
+  
+  // Create a dynamic message with the player's actual stats
+  const shareText = `Just got this resolved in ${moves} moves and ${timer} seconds. Wanna try? Here it is: Hungry Memory Game - ${gameUrl}`;
+  
+  // Create an overlay with copy instructions
+  const overlay = document.createElement('div');
+  overlay.className = 'share-overlay';
+  overlay.innerHTML = `
+    <div class="share-modal">
+      <h3>Share Your Achievement</h3>
+      <p>Copy this text to share on Facebook:</p>
+      <textarea class="share-text" readonly>${shareText}</textarea>
+      <div class="share-buttons">
+        <button id="copy-btn" class="copy-btn">Copy Text</button>
+        <button id="continue-share-btn" class="continue-btn">Continue to Facebook</button>
+        <button id="cancel-share-btn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  
+  // Select the text in the textarea
+  const textarea = overlay.querySelector('.share-text');
+  textarea.focus();
+  textarea.select();
+  
+  // Add event listeners
+  overlay.querySelector('#copy-btn').addEventListener('click', function() {
+    // Copy the text
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Show success message
+    this.textContent = 'Copied!';
+    setTimeout(() => {
+      this.textContent = 'Copy Text';
+    }, 2000);
+  });
+  
+  overlay.querySelector('#continue-share-btn').addEventListener('click', function() {
+    // Copy the text automatically before continuing
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Remove the overlay
+    document.body.removeChild(overlay);
+    
+    // Share to Facebook
+    shareToFacebook(gameUrl, shareText);
+  });
+  
+  overlay.querySelector('#cancel-share-btn').addEventListener('click', function() {
+    // Remove the overlay
+    document.body.removeChild(overlay);
+  });
 });
 
-// Start the game after preloading images
-window.addEventListener('DOMContentLoaded', () => {
+// Add meta tags for better sharing
+function addSocialMetaTags() {
+  // Only add these tags if they don't already exist
+  if (!document.querySelector('meta[property="og:title"]')) {
+    const metaTags = [
+      { property: 'og:title', content: 'Hungry Memory Game' },
+      { property: 'og:description', content: 'Challenge your memory with this beautiful vintage memory card game!' },
+      { property: 'og:image', content: window.location.origin + '/Images/share-image.jpg' },
+      { property: 'og:url', content: window.location.href },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' }
+    ];
+    
+    metaTags.forEach(tag => {
+      const meta = document.createElement('meta');
+      if (tag.property) {
+        meta.setAttribute('property', tag.property);
+      } else {
+        meta.setAttribute('name', tag.name);
+      }
+      meta.setAttribute('content', tag.content);
+      document.head.appendChild(meta);
+    });
+  }
+}
+
+// Set auto-resolve button
+document.addEventListener('DOMContentLoaded', function() {
+  // Add social sharing meta tags
+  addSocialMetaTags();
+  
+  // Start the game
   preloadImages(() => {
     createBoard();
   });
