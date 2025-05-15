@@ -473,7 +473,7 @@ h1 {
 }
 
 #victory-message {
-  font-size: 2rem;
+  font-size: 1rem;
   margin-bottom: 18px;
   margin-top: 0;
 }
@@ -681,7 +681,7 @@ h1 {
 .victory-subtitle {
   font-family: 'Montserrat', 'Poppins', Arial, sans-serif;
   font-weight: 400;
-  font-size: 1.22rem;
+  font-size: 0.8rem;
   color: #333;
   opacity: 0.9;
   margin-bottom: 22px;
@@ -800,11 +800,11 @@ h1 {
 
 @media (max-width: 400px) {
   .victory-headline {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   
   .victory-subtitle {
-    font-size: 0.99rem;
+    font-size: 0.75rem;
   }
   
   .victory-promo {
