@@ -24,7 +24,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
   z-index: 0;
   box-sizing: border-box;
@@ -46,6 +46,8 @@ body, .modal-bg, .modal {
   position: relative;
   z-index: 3;
   max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .logo {
@@ -77,6 +79,8 @@ body, .modal-bg, .modal {
   box-sizing: border-box;
   position: relative;
   z-index: 2;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Add a pseudo-element for an additional shadow effect */
@@ -491,147 +495,99 @@ h1 {
   padding: 0;
 }
 
+/* Optimize confetti animations for better performance */
 .confetti-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: transparent;
+  z-index: 1;
+  pointer-events: none;
+  /* Set will-change to opacity to improve rendering performance */
+  will-change: opacity;
 }
 
 .confetti-dot {
   position: absolute;
-  border-radius: 12px;
-  opacity: 0.8;
-  animation: confetti-fall 6.4s linear infinite;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
-}
-
-.confetti-dot.blue {
-  width: 16px;
-  height: 48px;
-  background: #4285F4;
-  transform: rotate(30deg);
-}
-.confetti-dot.pink {
-  width: 24px;
-  height: 24px;
-  background: #FF5EB3;
-  border-radius: 50%;
-}
-.confetti-dot.yellow {
-  width: 24px;
-  height: 48px;
-  background: #FFDE59;
-  transform: rotate(-15deg);
-}
-.confetti-dot.cyan {
-  width: 16px;
-  height: 36px;
-  background: #00E5FF;
-  transform: rotate(45deg);
-}
-.confetti-dot.red {
-  width: 20px;
-  height: 20px;
-  background: #FF5252;
-  border-radius: 50%;
-}
-.confetti-dot.green {
-  width: 18px;
-  height: 40px;
-  background: #5EFF5E;
-  transform: rotate(60deg);
-}
-.confetti-dot.purple {
-  width: 22px;
-  height: 22px;
-  background: #B85EFF;
-  border-radius: 50%;
-}
-.confetti-dot.orange {
-  width: 15px;
-  height: 32px;
-  background: #FFA726;
-  transform: rotate(-30deg);
-}
-.confetti-dot.star {
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 18px solid #FFEB3B;
-  background: transparent;
-  position: relative;
-}
-.confetti-dot.star:after {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 6px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 18px solid #FFEB3B;
-}
-.confetti-dot.serpentine {
-  width: 6px;
-  height: 60px;
-  background: #FF9800;
-  border-radius: 3px;
-  transform-origin: center;
-  animation: confetti-fall 6.4s linear infinite, confetti-wiggle 2s ease-in-out infinite alternate;
-}
-.confetti-dot.curly {
   width: 8px;
-  height: 40px;
-  background: #E040FB;
-  border-radius: 4px;
-  transform-origin: center;
-  animation: confetti-fall 6.4s linear infinite, confetti-curl 1.5s ease-in-out infinite alternate;
+  height: 8px;
+  border-radius: 1px;
+  top: -10px;
+  opacity: 0.8; /* Slightly reduced opacity */
+  /* Use translate3d to trigger GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  /* Reduce animation complexity with only one animation when possible */
+  animation: confetti-fall 3s linear forwards;
+  /* Using transform for animations is more performant than changing x/y positions */
+  will-change: transform;
 }
 
+/* Optimize the remaining confetti color styles to be the same, just updating colors */
+.confetti-dot.blue { background-color: #5d9cec; }
+.confetti-dot.pink { background-color: #ec87c0; }
+.confetti-dot.yellow { background-color: #ffce54; }
+.confetti-dot.cyan { background-color: #4fc1e9; }
+.confetti-dot.red { background-color: #ed5565; }
+.confetti-dot.green { background-color: #a0d468; }
+.confetti-dot.purple { background-color: #ac92ec; }
+.confetti-dot.orange { background-color: #fc6e51; }
+
+/* Simplify the star animations to be more performant */
+.confetti-dot.star {
+  background: none;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 12px solid gold;
+  border-radius: 0;
+  will-change: transform;
+}
+
+/* Use simpler animation for special confetti types to improve performance */
+.confetti-dot.serpentine,
+.confetti-dot.curly {
+  width: 6px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: #fc6e51;
+  animation: confetti-fall 3s linear forwards, confetti-wiggle 2.5s ease-in-out infinite;
+}
+
+.confetti-dot.curly {
+  background-color: #ac92ec;
+}
+
+/* Optimize animations to use transform for better performance */
 @keyframes confetti-fall {
-  0% { 
-    top: -50px; 
-    transform: translateY(0) rotate(var(--rotate)) translateX(0);
-  }
-  25% {
-    transform: translateY(0) rotate(calc(var(--rotate) + 10deg)) translateX(var(--sway-left));
-  }
-  50% {
-    transform: translateY(0) rotate(calc(var(--rotate) + 20deg)) translateX(var(--sway-right));
-  }
-  75% {
-    transform: translateY(0) rotate(calc(var(--rotate) + 30deg)) translateX(var(--sway-left));
-  }
-  100% { 
-    top: 110%; 
-    transform: translateY(0) rotate(calc(var(--rotate) + 45deg)) translateX(var(--sway-right));
-  }
-}
-
-@keyframes confetti-wiggle {
-  0%, 100% {
-    transform: rotate(var(--rotate)) scaleX(1);
-  }
-  50% {
-    transform: rotate(calc(var(--rotate) + 180deg)) scaleX(0.8);
-  }
-}
-
-@keyframes confetti-curl {
   0% {
-    border-radius: 4px 4px 4px 20px;
+    transform: translate3d(0, 0, 0) rotate(var(--rotate, 0deg));
+    opacity: 0;
   }
-  50% {
-    border-radius: 20px 4px 20px 4px;
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
   }
   100% {
-    border-radius: 4px 20px 4px 20px;
+    transform: translate3d(0, 100vh, 0) rotate(calc(var(--rotate, 0deg) + 180deg));
+    opacity: 0;
   }
+}
+
+/* Simplify the wiggle animation to use less resources */
+@keyframes confetti-wiggle {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(var(--sway-right, 30px)); }
+}
+
+/* Remove the curl animation and replace with simpler rotation */
+@keyframes confetti-curl {
+  0%, 100% { transform: rotate(var(--rotate, 0deg)); }
+  50% { transform: rotate(calc(var(--rotate, 0deg) + 180deg)); }
 }
 
 .victory-content {
@@ -648,7 +604,7 @@ h1 {
     0 16px 32px rgba(0,0,0,0.12),
     0 32px 64px rgba(0,0,0,0.08),
     inset 0 1px 1px rgba(255,255,255,0.4);
-  padding: 43px 22px 32px 22px;
+  padding: 63px 22px 32px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -875,7 +831,8 @@ h1 {
 /* Add styles for the side images */
 .side-image-left, .side-image-right {
   position: fixed;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
   height: 90vh;
   max-height: 800px;
   z-index: 1;
@@ -884,16 +841,13 @@ h1 {
 }
 
 .side-image-left {
-  left: 0;
+  left: 50%;
+  transform: translate(-575px, -50%);
 }
 
 .side-image-right {
-  right: 0;
-}
-
-/* Remove the body::before gradient overlay */
-body::before {
-  display: none;
+  right: 50%;
+  transform: translate(575px, -50%);
 }
 
 /* Media query for tablets and smaller screens */
@@ -902,6 +856,14 @@ body::before {
     height: 70vh;
     max-height: 600px;
     opacity: 0.8;
+  }
+  
+  .side-image-left {
+    transform: translate(-475px, -50%);
+  }
+  
+  .side-image-right {
+    transform: translate(475px, -50%);
   }
 }
 
@@ -1175,4 +1137,101 @@ body::before {
 
 .card.flip-back .card-inner {
   animation: flip-back 0.5s ease-out forwards;
+}
+
+.theme-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0 0 0;
+  gap: 16px;
+}
+.theme-label {
+  font-size: 1.1rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  color: #6d4c2c !important;
+  font-weight: 600;
+}
+.theme-toggle-row .theme-label:first-child {
+  color: #6d4c2c !important;
+}
+.theme-toggle-row .theme-label:last-child {
+  color: #1a2233 !important;
+}
+body.dark-theme .theme-label,
+body.dark-theme .theme-toggle-row .theme-label:last-child {
+  color: inherit;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 54px;
+  height: 28px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e0c9a6;
+  transition: .4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+input:checked + .slider {
+  background-color: #1a2233;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Dark theme overrides (to be toggled with a class) */
+body.dark-theme {
+  background: url('./Images/dark_blue.jpg') no-repeat center center fixed !important;
+  background-size: cover !important;
+}
+body.dark-theme .theme-label {
+  color: #b8c6e0;
+}
+body.dark-theme .theme-toggle-row .theme-label:last-child {
+  color: #e0c9a6;
+}
+
+/* Add the logo filter for dark theme */
+body.dark-theme .logo {
+  filter: brightness(0) saturate(100%) invert(70%) sepia(5%) saturate(246%) hue-rotate(179deg) brightness(87%) contrast(88%);
+  /* This filter changes the logo color to rgba(155, 159, 164, 1) */
+}
+
+/* Keep the label color overrides */
+.theme-toggle-row .theme-label:first-child {
+  color: #6d4c2c !important;
+}
+.theme-toggle-row .theme-label:last-child {
+  color: #1a2233 !important;
+}
+
+/* Remove the body::before gradient overlay */
+body::before {
+  display: none;
+}
+
+/* Media query for tablets and smaller screens */
+.underline {
+  text-decoration: underline;
 } 

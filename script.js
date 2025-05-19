@@ -28,6 +28,46 @@ const victoryMessage = document.getElementById('victory-message');
 const restartModalBtn = document.getElementById('restart-modal-btn');
 const shareFacebookBtn = document.getElementById('share-facebook');
 
+// Theme toggle logic
+const themeToggle = document.getElementById('theme-toggle');
+const logoImg = document.querySelector('.logo');
+const sideImgLeft = document.querySelector('.side-image-left');
+const sideImgRight = document.querySelector('.side-image-right');
+
+function setTheme(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark-theme');
+    // Change side images
+    if (sideImgLeft) sideImgLeft.src = './Images/left-side_2.png';
+    if (sideImgRight) sideImgRight.src = './Images/right-side_2.png';
+    // Change closed tile color
+    document.querySelectorAll('.card-back').forEach(el => {
+      el.style.background = '#e0c9a6';
+      el.style.color = '#1a2233';
+      el.style.border = '2px solid #1a2233'; // Add 2px thick rim in dark mode
+    });
+  } else {
+    document.body.classList.remove('dark-theme');
+    // Change side images
+    if (sideImgLeft) sideImgLeft.src = './Images/left-side.png';
+    if (sideImgRight) sideImgRight.src = './Images/right-side.png';
+    // Change closed tile color
+    document.querySelectorAll('.card-back').forEach(el => {
+      el.style.background = '#0a1923';
+      el.style.color = '#fff';
+      el.style.border = 'none'; // Remove border in light mode
+    });
+  }
+}
+
+// Initialize theme based on toggle state
+themeToggle.addEventListener('change', function() {
+  setTheme(this.checked);
+});
+
+// Set initial theme state
+setTheme(themeToggle.checked);
+
 // Function to auto-solve the game directly
 function autoSolveGame() {
   console.log("Auto-solving game...");
@@ -382,50 +422,78 @@ function endGame() {
   const confettiBg = document.querySelector('.confetti-bg');
   confettiBg.innerHTML = '';
   
-  // Add confetti elements to match the screenshot
+  // Add confetti elements - OPTIMIZED for better performance
   const colors = ['blue', 'pink', 'yellow', 'cyan', 'red', 'green', 'purple', 'orange'];
   const specialTypes = ['star', 'serpentine', 'curly'];
   const rotations = [15, 30, 45, 60, -15, -30, -45, -60];
   
-  // Create more confetti for a fuller effect
-  for (let i = 0; i < 100; i++) {
-    const dot = document.createElement('div');
+  // Reduce number of confetti particles by 50% for better performance
+  const confettiCount = 50; // Reduced from 100
+  
+  // Create confetti in batches to reduce initial load
+  const batchSize = 10;
+  const totalBatches = confettiCount / batchSize;
+  
+  // Function to create confetti with staggered rendering
+  function createConfettiBatch(batchIndex) {
+    if (batchIndex >= totalBatches) return;
     
-    // Randomly choose between regular confetti and special types
-    const useSpecialType = Math.random() > 0.7; // 30% chance for special types
+    const startIdx = batchIndex * batchSize;
+    const endIdx = Math.min(startIdx + batchSize, confettiCount);
     
-    if (useSpecialType) {
-      // Use a special type (star, serpentine, or curly)
-      const specialType = specialTypes[Math.floor(Math.random() * specialTypes.length)];
-      dot.className = `confetti-dot ${specialType}`;
-    } else {
-      // Use a regular color confetti
-      const colorClass = colors[Math.floor(Math.random() * colors.length)];
-      dot.className = `confetti-dot ${colorClass}`;
+    // Create a document fragment for more efficient DOM manipulation
+    const fragment = document.createDocumentFragment();
+    
+    for (let i = startIdx; i < endIdx; i++) {
+      const dot = document.createElement('div');
+      
+      // Randomly choose between regular confetti and special types
+      // Reduce special types for better performance
+      const useSpecialType = Math.random() > 0.8; // 20% chance (was 30%)
+      
+      if (useSpecialType) {
+        // Use a special type (star, serpentine, or curly)
+        const specialType = specialTypes[Math.floor(Math.random() * specialTypes.length)];
+        dot.className = `confetti-dot ${specialType}`;
+      } else {
+        // Use a regular color confetti
+        const colorClass = colors[Math.floor(Math.random() * colors.length)];
+        dot.className = `confetti-dot ${colorClass}`;
+      }
+      
+      // Position randomly across the screen
+      dot.style.left = `${Math.random() * 100}%`;
+      
+      // Random delay for more natural effect
+      const delay = Math.random() * 3; // Shorter delays (was 6)
+      dot.style.animationDelay = `${delay}s`;
+      
+      // Random animation duration for variation - faster for better performance
+      const duration = 3 + Math.random() * 2; // Shorter duration (was 4 + random * 4.8)
+      dot.style.animationDuration = `${duration}s`;
+      
+      // Set random rotation angle
+      const rotate = rotations[Math.floor(Math.random() * rotations.length)];
+      dot.style.setProperty('--rotate', `${rotate}deg`);
+      
+      // Set random sway amounts - reduced for better performance
+      const swayAmount = 30 + Math.random() * 60; // Less sway (was 50 + random * 100)
+      dot.style.setProperty('--sway-left', `${-swayAmount}px`);
+      dot.style.setProperty('--sway-right', `${swayAmount}px`);
+      
+      fragment.appendChild(dot);
     }
     
-    // Position randomly across the screen
-    dot.style.left = `${Math.random() * 100}%`;
+    confettiBg.appendChild(fragment);
     
-    // Random delay for more natural effect
-    const delay = Math.random() * 6;
-    dot.style.animationDelay = `${delay}s`;
-    
-    // Random animation duration for variation (20% faster)
-    const duration = 4 + Math.random() * 4.8; // 20% faster
-    dot.style.animationDuration = `${duration}s`;
-    
-    // Set random rotation angle
-    const rotate = rotations[Math.floor(Math.random() * rotations.length)];
-    dot.style.setProperty('--rotate', `${rotate}deg`);
-    
-    // Set random sway amounts
-    const swayAmount = 50 + Math.random() * 100;
-    dot.style.setProperty('--sway-left', `${-swayAmount}px`);
-    dot.style.setProperty('--sway-right', `${swayAmount}px`);
-    
-    confettiBg.appendChild(dot);
+    // Schedule next batch with a small delay
+    if (batchIndex < totalBatches - 1) {
+      setTimeout(() => createConfettiBatch(batchIndex + 1), 50);
+    }
   }
+  
+  // Start creating confetti in batches
+  createConfettiBatch(0);
 }
 
 function restartGame() {

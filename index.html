@@ -40,6 +40,14 @@
       <button id="restart-btn">Restart</button>
     </div>
     <div id="game-board" class="game-board"></div>
+    <div class="theme-toggle-row">
+      <span class="theme-label">Light-brown</span>
+      <label class="switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider round"></span>
+      </label>
+      <span class="theme-label">Dark-blue</span>
+    </div>
   </div>
   <div id="victory-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="victory-title">
     <div class="confetti-bg" aria-hidden="true"></div>
@@ -51,7 +59,7 @@
         <span class="normal-text">Discover more ART in</span> The Book: The Ultimate Guide to Rebuilding a Civilization
       </a>
       <p class="victory-code">
-        Use the code <span class="brand-blue">MEMORY</span> to get unique bookmarks.
+        Use the code <span class="brand-blue">MEMORY</span> at <span class="underline">checkout</span> to get unique bookmarks.
       </p>
       <div class="victory-btns">
         <button id="restart-modal-btn" class="btn-primary" aria-label="Restart game">Restart</button>
