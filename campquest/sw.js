@@ -1,5 +1,5 @@
 /* Cache-first for repeat visits. Bump CACHE_BUST when you publish a new Unity WebGL build. */
-var CACHE_BUST = "survival-2026-04-28-1";
+var CACHE_BUST = "campquest-2026-04-28-1";
 
 function scopeBase() {
   var p = self.location.pathname;
@@ -36,7 +36,12 @@ self.addEventListener("activate", function (event) {
     caches.keys().then(function (keys) {
       return Promise.all(
         keys
-          .filter(function (k) { return k !== CACHE_BUST && k.indexOf("survival-") === 0; })
+          .filter(function (k) {
+            return (
+              k !== CACHE_BUST &&
+              (k.indexOf("campquest-") === 0 || k.indexOf("survival-") === 0)
+            );
+          })
           .map(function (k) { return caches.delete(k); })
       );
     }).then(function () { return self.clients.claim(); })

@@ -1,6 +1,6 @@
-# Mobile-friendly Unity app (Merger / survival game)
+# Mobile-friendly Unity app (Merger / Camp Quest)
 
-This repository’s **GitHub Pages** site serves the **WebGL** build under `survival/`. A **native** Android or iOS app must be built with **Unity Editor** on your machine; that cannot be done from Cursor or GitHub Actions without a Unity license and build pipeline.
+This repository’s **GitHub Pages** site serves the **WebGL** build under `campquest/` (legacy `/survival/` redirects). A **native** Android or iOS app must be built with **Unity Editor** on your machine; that cannot be done from Cursor or GitHub Actions without a Unity license and build pipeline.
 
 ## Where the Unity project is
 
