@@ -24,7 +24,6 @@
         <div id="unity-load-caption" aria-live="polite" aria-busy="true">
           <div id="unity-load-pct">0%</div>
           <div id="unity-load-sub"></div>
-          <div id="unity-load-elapsed" aria-hidden="true"></div>
         </div>
       </div>
       <div id="unity-warning"> </div>
@@ -98,43 +97,23 @@
       var dpr = window.devicePixelRatio || 1;
       config.devicePixelRatio = Math.min(dpr, 1.25);
 
-      document.querySelector("#unity-loading-bar").style.display = "block";
+      document.querySelector("#unity-loading-bar").style.display = "flex";
 
       var loadPctEl = document.getElementById("unity-load-pct");
       var loadSubEl = document.getElementById("unity-load-sub");
-      var loadElapsedEl = document.getElementById("unity-load-elapsed");
       var loadCaptionEl = document.getElementById("unity-load-caption");
-      var loadT0 = performance.now();
       var lastProgress = -1;
-      var lastProgressAt = performance.now();
       var stallInterval = null;
 
-      function formatElapsed(ms) {
-        var s = Math.floor(ms / 1000);
-        var m = Math.floor(s / 60);
-        s = s % 60;
-        return m > 0 ? m + ":" + (s < 10 ? "0" : "") + s : s + "s";
-      }
-
       function updateLoadSubtext() {
-        if (!loadSubEl || !loadElapsedEl) return;
-        var now = performance.now();
-        var idle = now - lastProgressAt;
+        if (!loadSubEl) return;
         var p = lastProgress;
-        loadElapsedEl.textContent = "Elapsed: " + formatElapsed(now - loadT0);
         if (p >= 1) return;
         if (p < 0.82) {
-          loadSubEl.textContent = "Downloading game files…";
+          loadSubEl.textContent = "Loading game files…";
           return;
         }
-        if (p < 0.999 && idle > 3500) {
-          loadSubEl.textContent =
-            "Unity does not advance % here — compiling WebAssembly and starting the engine (often 30s–3min). Still working.";
-        } else if (p < 0.999) {
-          loadSubEl.textContent = "Preparing runtime…";
-        } else {
-          loadSubEl.textContent = "";
-        }
+        loadSubEl.textContent = "Compiling game assets, ~30 seconds left.";
       }
 
       stallInterval = window.setInterval(updateLoadSubtext, 400);
@@ -146,7 +125,6 @@
         layoutGameCanvas();
         createUnityInstance(canvas, config, (progress) => {
           lastProgress = progress;
-          lastProgressAt = performance.now();
           var pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
           if (loadPctEl) loadPctEl.textContent = pct + "%";
           document.querySelector("#unity-progress-bar-full").style.width = pct + "%";
