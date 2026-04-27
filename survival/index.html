@@ -104,19 +104,30 @@
       var loadCaptionEl = document.getElementById("unity-load-caption");
       var lastProgress = -1;
       var stallInterval = null;
+      var compilePhaseStartMs = null;
+      var COMPILE_COUNTDOWN_SEC = 25;
 
       function updateLoadSubtext() {
         if (!loadSubEl) return;
         var p = lastProgress;
         if (p >= 1) return;
         if (p < 0.82) {
+          compilePhaseStartMs = null;
           loadSubEl.textContent = "Loading game files…";
           return;
         }
-        loadSubEl.textContent = "Compiling game assets, ~30 seconds left.";
+        if (compilePhaseStartMs === null) compilePhaseStartMs = performance.now();
+        var elapsedSec = (performance.now() - compilePhaseStartMs) / 1000;
+        var remaining = Math.ceil(Math.max(0, COMPILE_COUNTDOWN_SEC - elapsedSec));
+        if (remaining > 0) {
+          loadSubEl.textContent =
+            "Compiling game assets, ~" + remaining + "s left.";
+        } else {
+          loadSubEl.textContent = "Compiling game assets, finishing up…";
+        }
       }
 
-      stallInterval = window.setInterval(updateLoadSubtext, 400);
+      stallInterval = window.setInterval(updateLoadSubtext, 250);
 
       var script = document.createElement("script");
       script.src = loaderUrl;
