@@ -7,6 +7,11 @@
     <title>Unity Web Player | Merger Game</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <!-- Start heavy Unity assets early (same paths the loader uses) so load overlaps with HTML/CSS. -->
+    <link rel="preload" href="Build/full_build.loader.js" as="script">
+    <link rel="preload" href="Build/full_build.framework.js" as="script">
+    <link rel="preload" href="Build/full_build.wasm" as="fetch" crossorigin>
+    <link rel="preload" href="Build/full_build.data" as="fetch" crossorigin>
   </head>
   <body>
     <div id="unity-container" class="unity-mobile">
@@ -16,9 +21,6 @@
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
-        <p id="unity-compile-hint" class="unity-compile-hint" hidden translate="no">
-          Almost done — compiling game code on your device can take 1–2 minutes on mobile or on a slow network. Keep this tab open.
-        </p>
       </div>
       <div id="unity-warning"> </div>
       <div id="unity-footer">
@@ -30,12 +32,6 @@
     <script>
       var canvas = document.querySelector("#unity-canvas");
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -59,8 +55,6 @@
       var loaderUrl = buildUrl + "/full_build.loader.js";
       var config = {
         arguments: [],
-        // Uncompressed paths: GitHub Pages does not send Content-Encoding: gzip for .gz
-        // static files, so Unity cannot use .data.gz / .framework.js.gz / .wasm.gz here.
         dataUrl: buildUrl + "/full_build.data",
         frameworkUrl: buildUrl + "/full_build.framework.js",
         codeUrl: buildUrl + "/full_build.wasm",
@@ -69,89 +63,22 @@
         productName: "Merger Game",
         productVersion: "0.1",
         showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
       };
 
-      (function applyMobileWebGLOptimizations() {
-        var ua = navigator.userAgent || "";
-        var mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
-        var narrowTouch =
-          navigator.maxTouchPoints > 0 &&
-          Math.min(window.screen.width, window.screen.height) <= 900;
-        if (mobileUA || narrowTouch) {
-          config.devicePixelRatio = 1;
-          config.webglContextAttributes = {
-            alpha: false,
-            antialias: false,
-            depth: true,
-            stencil: false,
-            preserveDrawingBuffer: false,
-            powerPreference: "low-power",
-            failIfMajorPerformanceCaveat: false,
-          };
-        }
-      })();
-
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
-      // Survival: full-viewport layout from first paint (classes set in HTML).
-      // Browser fullscreen API still needs a user gesture; we hook pointerdown + clicks below.
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      loadingBar.style.display = "flex";
-
-      var compileHintEl = document.querySelector("#unity-compile-hint");
-      var stallTimer = null;
-      var lastReportedProgress = -1;
+      document.querySelector("#unity-loading-bar").style.display = "block";
 
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-          if (progress > lastReportedProgress + 0.0001) {
-            lastReportedProgress = progress;
-            if (compileHintEl) compileHintEl.hidden = true;
-            if (stallTimer) {
-              clearTimeout(stallTimer);
-              stallTimer = null;
-            }
-          }
-          if (progress >= 0.88 && progress < 0.999 && !stallTimer) {
-            stallTimer = setTimeout(function () {
-              if (compileHintEl) compileHintEl.hidden = false;
-              stallTimer = null;
-            }, 10000);
-          }
-        }).then((unityInstance) => {
-                if (stallTimer) clearTimeout(stallTimer);
-                if (compileHintEl) compileHintEl.hidden = true;
-                loadingBar.style.display = "none";
+              }).then((unityInstance) => {
+                document.querySelector("#unity-loading-bar").style.display = "none";
                 var fsBtn = document.querySelector("#unity-fullscreen-button");
                 fsBtn.onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
 
-                // requestFullscreen only works inside a user gesture. Calling SetFullscreen
-                // from load/timers caused Chrome: TypeError: Permissions check failed.
                 function tryBrowserFullscreenFromGesture() {
                   try {
                     unityInstance.SetFullscreen(1);
@@ -168,8 +95,6 @@
                 document.addEventListener("touchend", onUserActivate, true);
 
               }).catch((message) => {
-                if (stallTimer) clearTimeout(stallTimer);
-                if (compileHintEl) compileHintEl.hidden = true;
                 alert(message);
               });
             };
