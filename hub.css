@@ -95,10 +95,18 @@ body {
 
 .quest-card--memory {
   background-image: url("assets/memory_quest.png");
+  background-image: image-set(
+    url("assets/memory_quest.webp") type("image/webp"),
+    url("assets/memory_quest.png") type("image/png")
+  );
 }
 
 .quest-card--camp {
   background-image: url("assets/the_camp.png");
+  background-image: image-set(
+    url("assets/the_camp.webp") type("image/webp"),
+    url("assets/the_camp.png") type("image/png")
+  );
 }
 
 .quest-card__label {
