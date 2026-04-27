@@ -1,0 +1,128 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f5f0e6;
+  --ink: #2c2419;
+  --accent: #6b4423;
+  --card-border: rgba(107, 68, 35, 0.45);
+  --shadow: rgba(44, 36, 25, 0.18);
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell,
+    sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  background-image: radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 255, 255, 0.35) 0,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(200, 190, 170, 0.25) 0,
+      transparent 40%
+    );
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.75rem) clamp(1rem, 4vw, 2rem) 3rem;
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4.5vw, 2.35rem);
+  letter-spacing: 0.02em;
+  margin: 0 0 clamp(1.75rem, 5vw, 2.75rem);
+  color: var(--accent);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1rem, 3vw, 1.75rem);
+  align-items: stretch;
+}
+
+@media (max-width: 640px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-card {
+  display: block;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  aspect-ratio: 16 / 10;
+  min-height: 180px;
+  border: 3px solid var(--card-border);
+  box-shadow: 0 10px 28px var(--shadow);
+  background-color: #ddd;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  outline-offset: 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.quest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(44, 36, 25, 0.22);
+  border-color: rgba(107, 68, 35, 0.75);
+}
+
+.quest-card:focus-visible {
+  outline: 3px solid #3d7ea6;
+}
+
+.quest-card--memory {
+  background-image: url("assets/memory_quest.png");
+}
+
+.quest-card--camp {
+  background-image: url("assets/the_camp.png");
+}
+
+.quest-card__label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.65rem 1rem 0.85rem;
+  background: linear-gradient(
+    to top,
+    rgba(30, 24, 18, 0.82) 0%,
+    rgba(30, 24, 18, 0.35) 55%,
+    transparent 100%
+  );
+  color: #fff;
+  font-weight: 600;
+  font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.subtitle {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.72;
+}
