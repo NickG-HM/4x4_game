@@ -16,6 +16,11 @@
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
+        <div id="unity-load-caption" aria-live="polite" aria-busy="true">
+          <div id="unity-load-pct">0%</div>
+          <div id="unity-load-sub"></div>
+          <div id="unity-load-elapsed" aria-hidden="true"></div>
+        </div>
       </div>
       <div id="unity-warning"> </div>
       <div id="unity-footer">
@@ -79,14 +84,63 @@
 
       document.querySelector("#unity-loading-bar").style.display = "block";
 
+      var loadPctEl = document.getElementById("unity-load-pct");
+      var loadSubEl = document.getElementById("unity-load-sub");
+      var loadElapsedEl = document.getElementById("unity-load-elapsed");
+      var loadCaptionEl = document.getElementById("unity-load-caption");
+      var loadT0 = performance.now();
+      var lastProgress = -1;
+      var lastProgressAt = performance.now();
+      var stallInterval = null;
+
+      function formatElapsed(ms) {
+        var s = Math.floor(ms / 1000);
+        var m = Math.floor(s / 60);
+        s = s % 60;
+        return m > 0 ? m + ":" + (s < 10 ? "0" : "") + s : s + "s";
+      }
+
+      function updateLoadSubtext() {
+        if (!loadSubEl || !loadElapsedEl) return;
+        var now = performance.now();
+        var idle = now - lastProgressAt;
+        var p = lastProgress;
+        loadElapsedEl.textContent = "Elapsed: " + formatElapsed(now - loadT0);
+        if (p >= 1) return;
+        if (p < 0.82) {
+          loadSubEl.textContent = "Downloading game files…";
+          return;
+        }
+        if (p < 0.999 && idle > 3500) {
+          loadSubEl.textContent =
+            "Unity does not advance % here — compiling WebAssembly and starting the engine (often 30s–3min). Still working.";
+        } else if (p < 0.999) {
+          loadSubEl.textContent = "Preparing runtime…";
+        } else {
+          loadSubEl.textContent = "";
+        }
+      }
+
+      stallInterval = window.setInterval(updateLoadSubtext, 400);
+
       var script = document.createElement("script");
       script.src = loaderUrl;
       if ("fetchPriority" in script) script.fetchPriority = "high";
       script.onload = () => {
         layoutGameCanvas();
         createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+          lastProgress = progress;
+          lastProgressAt = performance.now();
+          var pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
+          if (loadPctEl) loadPctEl.textContent = pct + "%";
+          document.querySelector("#unity-progress-bar-full").style.width = pct + "%";
+          updateLoadSubtext();
               }).then((unityInstance) => {
+                if (stallInterval) {
+                  clearInterval(stallInterval);
+                  stallInterval = null;
+                }
+                if (loadCaptionEl) loadCaptionEl.setAttribute("aria-busy", "false");
                 document.querySelector("#unity-loading-bar").style.display = "none";
                 var fsBtn = document.querySelector("#unity-fullscreen-button");
                 fsBtn.onclick = () => {
@@ -109,6 +163,11 @@
                 document.addEventListener("touchend", onUserActivate, true);
 
               }).catch((message) => {
+                if (stallInterval) {
+                  clearInterval(stallInterval);
+                  stallInterval = null;
+                }
+                if (loadCaptionEl) loadCaptionEl.setAttribute("aria-busy", "false");
                 alert(message);
               });
             };
