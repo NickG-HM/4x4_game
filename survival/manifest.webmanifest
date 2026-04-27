@@ -1,0 +1,19 @@
+{
+  "name": "Merger Game",
+  "short_name": "Merger",
+  "description": "Survival merger game",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#231F20",
+  "theme_color": "#231F20",
+  "icons": [
+    {
+      "src": "./TemplateData/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

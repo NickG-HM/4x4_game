@@ -3,8 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#231F20">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Unity Web Player | Merger Game</title>
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
@@ -30,6 +35,12 @@
       </div>
     </div>
     <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+        });
+      }
+
       var canvas = document.querySelector("#unity-canvas");
       var kRefW = 960;
       var kRefH = 600;
@@ -54,8 +65,9 @@
       }
 
       function layoutGameCanvas() {
-        var vw = window.innerWidth;
-        var vh = window.innerHeight;
+        var vv = window.visualViewport;
+        var vw = vv ? vv.width : window.innerWidth;
+        var vh = vv ? vv.height : window.innerHeight;
         var scale = Math.min(vw / kRefW, vh / kRefH);
         var cw = Math.max(1, Math.floor(kRefW * scale));
         var ch = Math.max(1, Math.floor(kRefH * scale));
@@ -64,6 +76,10 @@
       }
       layoutGameCanvas();
       window.addEventListener("resize", layoutGameCanvas, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", layoutGameCanvas, { passive: true });
+        window.visualViewport.addEventListener("scroll", layoutGameCanvas, { passive: true });
+      }
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/full_build.loader.js";
@@ -80,7 +96,7 @@
       };
 
       var dpr = window.devicePixelRatio || 1;
-      config.devicePixelRatio = Math.min(dpr, 2);
+      config.devicePixelRatio = Math.min(dpr, 1.25);
 
       document.querySelector("#unity-loading-bar").style.display = "block";
 
@@ -142,25 +158,11 @@
                 }
                 if (loadCaptionEl) loadCaptionEl.setAttribute("aria-busy", "false");
                 document.querySelector("#unity-loading-bar").style.display = "none";
+                document.querySelector("#unity-container").classList.add("game-ready");
                 var fsBtn = document.querySelector("#unity-fullscreen-button");
                 fsBtn.onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
-
-                function tryBrowserFullscreenFromGesture() {
-                  try {
-                    unityInstance.SetFullscreen(1);
-                  } catch (e) {}
-                }
-                function onUserActivate() {
-                  document.removeEventListener("pointerdown", onUserActivate, true);
-                  document.removeEventListener("click", onUserActivate, true);
-                  document.removeEventListener("touchend", onUserActivate, true);
-                  tryBrowserFullscreenFromGesture();
-                }
-                document.addEventListener("pointerdown", onUserActivate, true);
-                document.addEventListener("click", onUserActivate, true);
-                document.addEventListener("touchend", onUserActivate, true);
 
               }).catch((message) => {
                 if (stallInterval) {
