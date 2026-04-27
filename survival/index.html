@@ -106,18 +106,18 @@
                   unityInstance.SetFullscreen(1);
                 };
 
-                function tryBrowserFullscreen() {
+                // requestFullscreen only works inside a user gesture. Calling SetFullscreen
+                // from load/timers caused Chrome: TypeError: Permissions check failed.
+                function tryBrowserFullscreenFromGesture() {
                   try {
                     unityInstance.SetFullscreen(1);
                   } catch (e) {}
                 }
-                tryBrowserFullscreen();
-                setTimeout(tryBrowserFullscreen, 0);
-                setTimeout(tryBrowserFullscreen, 250);
-                setTimeout(tryBrowserFullscreen, 800);
-
                 function onUserActivate() {
-                  tryBrowserFullscreen();
+                  document.removeEventListener("pointerdown", onUserActivate, true);
+                  document.removeEventListener("click", onUserActivate, true);
+                  document.removeEventListener("touchend", onUserActivate, true);
+                  tryBrowserFullscreenFromGesture();
                 }
                 document.addEventListener("pointerdown", onUserActivate, true);
                 document.addEventListener("click", onUserActivate, true);
