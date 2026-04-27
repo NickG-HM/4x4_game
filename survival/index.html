@@ -55,9 +55,11 @@
       var loaderUrl = buildUrl + "/full_build.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/full_build.data.gz",
-        frameworkUrl: buildUrl + "/full_build.framework.js.gz",
-        codeUrl: buildUrl + "/full_build.wasm.gz",
+        // Uncompressed paths: GitHub Pages does not send Content-Encoding: gzip for .gz
+        // static files, so Unity cannot use .data.gz / .framework.js.gz / .wasm.gz here.
+        dataUrl: buildUrl + "/full_build.data",
+        frameworkUrl: buildUrl + "/full_build.framework.js",
+        codeUrl: buildUrl + "/full_build.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "Merger Game",
